@@ -1346,9 +1346,7 @@ void eDVBFrontend::getTransponderData(ePtr<iDVBTransponderData> &dest, bool orig
 			p[cmdseq.num++].cmd = DTV_INNER_FEC;
 			p[cmdseq.num++].cmd = DTV_ROLLOFF;
 			p[cmdseq.num++].cmd = DTV_PILOT;
-#if defined DTV_STREAM_ID
 			p[cmdseq.num++].cmd = DTV_STREAM_ID;
-#endif
 		}
 		else if (type == feCable)
 		{
@@ -1363,9 +1361,7 @@ void eDVBFrontend::getTransponderData(ePtr<iDVBTransponderData> &dest, bool orig
 			p[cmdseq.num++].cmd = DTV_TRANSMISSION_MODE;
 			p[cmdseq.num++].cmd = DTV_GUARD_INTERVAL;
 			p[cmdseq.num++].cmd = DTV_HIERARCHY;
-#if defined DTV_STREAM_ID
 			p[cmdseq.num++].cmd = DTV_STREAM_ID;
-#endif
 		}
 		else if (type == feATSC)
 		{
@@ -1949,9 +1945,7 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 			if (system == SYS_DVBS2)
 			{
 				p[cmdseq.num].cmd = DTV_ROLLOFF, p[cmdseq.num].u.data = rolloff, cmdseq.num++;
-#if defined DTV_STREAM_ID
 				p[cmdseq.num].cmd = DTV_STREAM_ID, p[cmdseq.num].u.data = parm.is_id | (parm.pls_code << 8) | (parm.pls_mode << 26), cmdseq.num++;
-#endif
 			}
 		}
 		else if (type == iDVBFrontend::feCable)
@@ -2590,14 +2584,12 @@ int eDVBFrontend::isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)
 		{
 			return 0;
 		}
-#if defined NO_STREAM_ID_FILTER
 		bool multistream = (parm.is_id != NO_STREAM_ID_FILTER || (parm.pls_code & 0x3FFFF) != 1 ||
 					(parm.pls_mode & 3) != eDVBFrontendParametersSatellite::PLS_Root);
 		if (parm.system == eDVBFrontendParametersSatellite::System_DVB_S2 && multistream && !is_multistream())
 		{
 			return 0;
 		}
-#endif
   		score = m_sec ? m_sec->canTune(parm, this, 1 << m_slotid) : 0;
 
 		if (score > 1 && parm.system == eDVBFrontendParametersSatellite::System_DVB_S && can_handle_dvbs2)
@@ -2605,13 +2597,11 @@ int eDVBFrontend::isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)
 			/* prefer to use an S tuner, try to keep S2 free for S2 transponders */
 			score--;
 		}
-#if defined NO_STREAM_ID_FILTER
 		if (score > 1 && is_multistream() && !multistream)
 		{
 			/* prefer to use a non multistream tuner, try to keep multistream tuners free for multistream transponders */
 			score--;
 		}
-#endif
 	}
 	else if (type == eDVBFrontend::feCable)
 	{
