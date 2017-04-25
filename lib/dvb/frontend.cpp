@@ -1949,7 +1949,9 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 			if (system == SYS_DVBS2)
 			{
 				p[cmdseq.num].cmd = DTV_ROLLOFF, p[cmdseq.num].u.data = rolloff, cmdseq.num++;
+#if defined DTV_STREAM_ID
 				p[cmdseq.num].cmd = DTV_STREAM_ID, p[cmdseq.num].u.data = parm.is_id | (parm.pls_code << 8) | (parm.pls_mode << 26), cmdseq.num++;
+#endif
 			}
 		}
 		else if (type == iDVBFrontend::feCable)
