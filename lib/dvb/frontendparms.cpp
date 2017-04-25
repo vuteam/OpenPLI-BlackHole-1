@@ -339,31 +339,19 @@ int eDVBSatelliteTransponderData::getSystem() const
 int eDVBSatelliteTransponderData::getIsId() const
 {
 	if (originalValues) return transponderParameters.is_id;
-#if defined DTV_STREAM_ID
 	return getProperty(DTV_STREAM_ID) & 0xFF;
-#else
-	return false;
-#endif
 }
 
 int eDVBSatelliteTransponderData::getPLSMode() const
 {
 	if (originalValues) return transponderParameters.pls_mode;
-#if defined DTV_STREAM_ID
 	return (getProperty(DTV_STREAM_ID) >> 26) & 0x3;
-#else
-	return false;
-#endif
 }
 
 int eDVBSatelliteTransponderData::getPLSCode() const
 {
 	if (originalValues) return transponderParameters.pls_code;
-#if defined DTV_STREAM_ID
 	return (getProperty(DTV_STREAM_ID) >> 8) & 0x3FFFF;
-#else
-	return false;
-#endif
 }
  DEFINE_REF(eDVBCableTransponderData);
 
