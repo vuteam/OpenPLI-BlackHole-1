@@ -2668,15 +2668,15 @@ int eDVBFrontend::isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)
 		eDVBFrontendParametersATSC parm;
 		bool can_handle_atsc, can_handle_dvbc_annex_b;
 		can_handle_dvbc_annex_b = supportsDeliverySystem(SYS_DVBC_ANNEX_B, !m_multitype);
- 		can_handle_atsc = supportsDeliverySystem(SYS_ATSC, !m_multitype);
+		can_handle_atsc = supportsDeliverySystem(SYS_ATSC, !m_multitype);
 		if (feparm->getATSC(parm) < 0)
 		{
 			return 0;
 		}
 		if (!can_handle_atsc && !can_handle_dvbc_annex_b)
- 		{
- 			return 0;
- 		}
+		{
+			return 0;
+		}
 		if (parm.system == eDVBFrontendParametersATSC::System_DVB_C_ANNEX_B && !can_handle_dvbc_annex_b)
 		{
 			return 0;
