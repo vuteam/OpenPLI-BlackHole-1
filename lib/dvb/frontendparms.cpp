@@ -336,7 +336,7 @@ int eDVBSatelliteTransponderData::getSystem() const
 	case SYS_DVBS2: return eDVBFrontendParametersSatellite::System_DVB_S2;
 	}
 }
-
+#if defined DTV_STREAM_ID
 int eDVBSatelliteTransponderData::getIsId() const
 {
 	if (originalValues) return transponderParameters.is_id;
@@ -357,7 +357,7 @@ int eDVBSatelliteTransponderData::getPLSCode() const
 
 	return (getProperty(DTV_STREAM_ID) >> 8) & 0x3FFFF;
 }
-
+#endif
  DEFINE_REF(eDVBCableTransponderData);
 
 eDVBCableTransponderData::eDVBCableTransponderData(struct dtv_property *dtvproperties, unsigned int propertycount, eDVBFrontendParametersCable &transponderparms, bool original)
