@@ -173,7 +173,7 @@ int eDVBTransponderData::getPLSCode() const
 	return -1;
 }
 
-  int eDVBTransponderData::getBandwidth() const
+int eDVBTransponderData::getBandwidth() const
 {
 	return -1;
 }
