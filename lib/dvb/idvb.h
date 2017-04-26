@@ -210,7 +210,7 @@ public:
 	void setParentTransportStreamID( eTransportStreamID tsid ) { data[6]=tsid.get(); }
 	
 	int getSourceID() const { return data[7]; }
-	void setSourceID(int sourceid) { data[7] = sourceid; }
+ 	void setSourceID(int sourceid) { data[7] = sourceid; }
 
 	eServiceReferenceDVB getParentServiceReference() const
 	{
@@ -304,11 +304,13 @@ public:
 		dxNewFound=64,
 		dxIsDedicated3D=128,
 		dxIsParentalProtected=256,
+		dxHideVBI=512,
 	};
 
 	bool usePMT() const { return !(m_flags & dxNoDVB); }
 	bool isHidden() const { return (m_flags & dxDontshow || m_flags & dxIsParentalProtected); }
 	bool isDedicated3D() const { return m_flags & dxIsDedicated3D; }
+	bool doHideVBI() const { return m_flags & dxHideVBI; }
 
 	CAID_LIST m_ca;
 
