@@ -529,7 +529,7 @@ int eDVBFrontend::PreferredFrontendIndex = -1;
 
 eDVBFrontend::eDVBFrontend(const char *devicenodename, int fe, int &ok, bool simulate, eDVBFrontend *simulate_fe)
 	:m_simulate(simulate), m_enabled(false), m_fbc(false), m_simulate_fe(simulate_fe), m_type(-1), m_dvbid(fe), m_slotid(fe)
- 	,m_fd(-1), m_dvbversion(0), m_rotor_mode(false), m_need_rotor_workaround(false), m_multitype(false)
+	,m_fd(-1), m_dvbversion(0), m_rotor_mode(false), m_need_rotor_workaround(false), m_multitype(false)
 	,m_state(stateClosed), m_timeout(0), m_tuneTimer(0)
 {
 	char filename[64];
@@ -545,6 +545,7 @@ eDVBFrontend::eDVBFrontend(const char *devicenodename, int fe, int &ok, bool sim
 	for (int i=0; i<eDVBFrontend::NUM_DATA_ENTRIES; ++i)
 		m_data[i] = -1;
 
+	m_data[FREQ_OFFSET] = 0;
 	m_idleInputpower[0]=m_idleInputpower[1]=0;
 
 	snprintf(filename, sizeof(filename), "/proc/stb/frontend/%d/fbc_id", m_slotid);
@@ -688,8 +689,11 @@ int eDVBFrontend::openFrontend()
 		fe_info.frequency_min = 900000;
 		fe_info.frequency_max = 2200000;
 	}
-	
+
 	m_multitype = m_delsys[SYS_DVBS] && (m_delsys[SYS_DVBT] || m_delsys[SYS_DVBC_ANNEX_A]);
+
+	if (!m_multitype)
+		m_type = feSatellite;
 
 	setTone(iDVBFrontend::toneOff);
 	setVoltage(iDVBFrontend::voltageOff);
@@ -1071,6 +1075,10 @@ void eDVBFrontend::calculateSignalQuality(int snr, int &signalquality, int &sign
 	{
 		ret = (int)((((double(snr) / (65536.0 / 100.0)) * 0.1850) - 0.3500) * 100);
 	}
+	else if (!strcmp(m_description, "BCM7362 (internal) DVB-S2")) // Xsarius
+	{
+		ret = (int)((((double(snr) / (65536.0 / 100.0)) * 0.28) - 10.0) * 100);
+	}
 	else if (!strcmp(m_description, "Genpix"))
 	{
 		ret = (int)((snr << 1) / 5);
@@ -1310,7 +1318,7 @@ int eDVBFrontend::readFrontendData(int type)
 			{
 				return 0;
 			}
-			return p.u.data + m_data[FREQ_OFFSET];
+			return type == feSatellite ? p.u.data + m_data[FREQ_OFFSET] : p.u.data;
 		}
 	}
 	return 0;
@@ -1945,6 +1953,7 @@ void eDVBFrontend::setFrontend(bool recvEvents)
 			if (system == SYS_DVBS2)
 			{
 				p[cmdseq.num].cmd = DTV_ROLLOFF, p[cmdseq.num].u.data = rolloff, cmdseq.num++;
+				p[cmdseq.num].cmd = DTV_PILOT, p[cmdseq.num].u.data = pilot, cmdseq.num++;
 				p[cmdseq.num].cmd = DTV_STREAM_ID, p[cmdseq.num].u.data = parm.is_id | (parm.pls_code << 8) | (parm.pls_mode << 26), cmdseq.num++;
 			}
 		}
@@ -2276,11 +2285,11 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where)
 		res = -ENODEV;
 		goto tune_error;
 	}
-	
+
 	if (m_type == feSatellite && type != feSatellite)
- 		setTone(iDVBFrontend::toneOff);
- 	else if (type == feSatellite && m_type != feSatellite)
- 		setDeliverySystem("DVB-S");
+		setTone(iDVBFrontend::toneOff);
+	else if (type == feSatellite && m_type != feSatellite)
+		setDeliverySystem("DVB-S");
 
 	if (!m_simulate)
 		m_sn->stop();
@@ -2387,10 +2396,10 @@ RESULT eDVBFrontend::tune(const iDVBFrontendParameters &where)
 	if (!m_simulate)
 	{
 		if(m_type != type)
- 		{
- 			eDebug("[eDVBFrontend] tune setting type to %d from %d", type, m_type);
- 			m_type = type;
- 		}
+		{
+			eDebug("[eDVBFrontend] tune setting type to %d from %d", type, m_type);
+			m_type = type;
+		}
 		m_tuneTimer->start(0,true);
 		m_tuning = 1;
 		if (m_state != stateTuning)
@@ -2466,10 +2475,10 @@ RESULT eDVBFrontend::setTone(int t)
 	if (m_simulate)
 		return 0;
 	if (m_type != feSatellite)
- 	{
- 		eDebug("[eDVBFrontend] sendTone allowed only in feSatellite (%d)", m_type);
- 		return 0;
- 	}
+	{
+		eDebug("[eDVBFrontend] sendTone allowed only in feSatellite (%d)", m_type);
+		return 0;
+	}
 	m_data[CUR_TONE]=t;
 	switch (t)
 	{
@@ -2491,10 +2500,10 @@ RESULT eDVBFrontend::sendDiseqc(const eDVBDiseqcCommand &diseqc)
 	if (m_simulate)
 		return 0;
 	if (m_type != feSatellite)
- 	{
- 		eDebug("[eDVBFrontend] sendDiseqc allowed only in feSatellite (%d)", m_type);
- 		return 0;
- 	}
+	{
+		eDebug("[eDVBFrontend] sendDiseqc allowed only in feSatellite (%d)", m_type);
+		return 0;
+	}
 	memcpy(cmd.msg, diseqc.data, diseqc.len);
 	cmd.msg_len = diseqc.len;
 	if (::ioctl(m_fd, FE_DISEQC_SEND_MASTER_CMD, &cmd))
@@ -2508,10 +2517,10 @@ RESULT eDVBFrontend::sendToneburst(int burst)
 	if (m_simulate)
 		return 0;
 	if (m_type != feSatellite)
- 	{
- 		eDebug("[eDVBFrontend] sendToneburst allowed only in feSatellite (%d)", m_type);
- 		return 0;
- 	}
+	{
+		eDebug("[eDVBFrontend] sendToneburst allowed only in feSatellite (%d)", m_type);
+		return 0;
+	}
 	if (burst == eDVBSatelliteDiseqcParameters::B)
 		cmd = SEC_MINI_B;
 	else
@@ -2575,7 +2584,7 @@ int eDVBFrontend::isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)
 			return 0;
 		}
 		can_handle_dvbs = supportsDeliverySystem(SYS_DVBS, !m_multitype);
- 		can_handle_dvbs2 = supportsDeliverySystem(SYS_DVBS2, !m_multitype);
+		can_handle_dvbs2 = supportsDeliverySystem(SYS_DVBS2, !m_multitype);
 		if (parm.system == eDVBFrontendParametersSatellite::System_DVB_S2 && !can_handle_dvbs2)
 		{
 			return 0;
@@ -2590,8 +2599,7 @@ int eDVBFrontend::isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)
 		{
 			return 0;
 		}
-  		score = m_sec ? m_sec->canTune(parm, this, 1 << m_slotid) : 0;
-
+		score = m_sec ? m_sec->canTune(parm, this, 1 << m_slotid) : 0;
 		if (score > 1 && parm.system == eDVBFrontendParametersSatellite::System_DVB_S && can_handle_dvbs2)
 		{
 			/* prefer to use an S tuner, try to keep S2 free for S2 transponders */
@@ -2639,7 +2647,7 @@ int eDVBFrontend::isCompatibleWith(ePtr<iDVBFrontendParameters> &feparm)
 		eDVBFrontendParametersTerrestrial parm;
 		bool can_handle_dvbt, can_handle_dvbt2;
 		can_handle_dvbt = supportsDeliverySystem(SYS_DVBT, !m_multitype);
- 		can_handle_dvbt2 = supportsDeliverySystem(SYS_DVBT2, !m_multitype);
+		can_handle_dvbt2 = supportsDeliverySystem(SYS_DVBT2, !m_multitype);
 		if (feparm->getDVBT(parm) < 0)
 		{
 			return 0;
@@ -2735,11 +2743,11 @@ bool eDVBFrontend::setDeliverySystem(const char *type)
 		eDebug("[eDVBFrontend] setDeliverySystem cannot change delivery system with closed frontend");
 		return false;
 	}
-	
+
 	if (m_simulate)
- 	{
- 		return false;
- 	}
+	{
+		return false;
+	}
 
 	cmdseq.props = p;
 	cmdseq.num = 1;
@@ -2774,7 +2782,7 @@ bool eDVBFrontend::setDeliverySystem(const char *type)
 	else if (!strcmp(type, "ATSC"))
 	{
 		p[0].u.data = SYS_ATSC;
-		fetype = feCable;
+		fetype = feATSC;
 	}
 	else
 	{
