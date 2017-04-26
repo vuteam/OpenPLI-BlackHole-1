@@ -336,23 +336,28 @@ int eDVBSatelliteTransponderData::getSystem() const
 	case SYS_DVBS2: return eDVBFrontendParametersSatellite::System_DVB_S2;
 	}
 }
+
 int eDVBSatelliteTransponderData::getIsId() const
 {
 	if (originalValues) return transponderParameters.is_id;
+
 	return getProperty(DTV_STREAM_ID) & 0xFF;
 }
 
 int eDVBSatelliteTransponderData::getPLSMode() const
 {
 	if (originalValues) return transponderParameters.pls_mode;
+
 	return (getProperty(DTV_STREAM_ID) >> 26) & 0x3;
 }
 
 int eDVBSatelliteTransponderData::getPLSCode() const
 {
 	if (originalValues) return transponderParameters.pls_code;
+
 	return (getProperty(DTV_STREAM_ID) >> 8) & 0x3FFFF;
 }
+
  DEFINE_REF(eDVBCableTransponderData);
 
 eDVBCableTransponderData::eDVBCableTransponderData(struct dtv_property *dtvproperties, unsigned int propertycount, eDVBFrontendParametersCable &transponderparms, bool original)
