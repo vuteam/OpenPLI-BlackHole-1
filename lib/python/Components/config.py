@@ -367,7 +367,7 @@ class ConfigSelection(ConfigElement):
 			else:
 				checked = ''
 			res += '<input type="radio" name="' + id + '" ' + checked + 'value="' + v + '">' + descr + "</input></br>\n"
-		return res;
+		return res
 
 	def unsafeAssign(self, value):
 		# setValue does check if value is in choices. This is safe enough.
@@ -522,9 +522,9 @@ class ConfigDateTime(ConfigElement):
 
 	def handleKey(self, key):
 		if key == KEY_LEFT:
-			self.value = self.value - self.increment
+			self.value -= self.increment
 		elif key == KEY_RIGHT:
-			self.value = self.value + self.increment
+			self.value += self.increment
 		elif key == KEY_HOME or key == KEY_END:
 			self.value = self.default
 
@@ -662,7 +662,7 @@ class ConfigSequence(ConfigElement):
 	def genText(self):
 		value = ""
 		mPos = self.marked_pos
-		num = 0;
+		num = 0
 		for i in self._value:
 			if value:	#fixme no heading separator possible
 				value += self.seperator
@@ -695,7 +695,8 @@ class ConfigSequence(ConfigElement):
 		return str(v)
 
 	def fromstring(self, value):
-		return [int(x) for x in value.split(self.seperator)]
+		ret = [int(x) for x in value.split(self.seperator)]
+		return ret + [int(x[0]) for x in self.limits[len(ret):]]
 
 	def onDeselect(self, session):
 		if self.last_value != self._value:
@@ -866,6 +867,15 @@ class ConfigFloat(ConfigSequence):
 		return float(self.value[1] / float(self.limits[1][1] + 1) + self.value[0])
 
 	float = property(getFloat)
+	
+	def getFloatInt(self):
+		return int(self.value[0] * float(self.limits[1][1] + 1) + self.value[1])
+
+	def setFloatInt(self, val):
+		self.value[0] = val / float(self.limits[1][1] + 1)
+		self.value[1] = val % float(self.limits[1][1] + 1)
+
+	floatint = property(getFloatInt, setFloatInt)
 
 # an editable text...
 class ConfigText(ConfigElement, NumericalTextInput):
@@ -1195,7 +1205,7 @@ class ConfigDirectory(ConfigText):
 			return ConfigText.getValue(self)
 
 	def setValue(self, val):
-		if val == None:
+		if val is None:
 			val = ""
 		ConfigText.setValue(self, val)
 
@@ -1412,7 +1422,7 @@ class ConfigLocations(ConfigElement):
 		for x in self.locations:
 			if x[1] == mp:
 				x[2] = True
-			elif x[1] == None and fileExists(x[0]):
+			elif x[1] is None and fileExists(x[0]):
 				x[1] = self.getMountpoint(x[0])
 				x[2] = True
 
@@ -1676,7 +1686,7 @@ class Config(ConfigSubsection):
 		ConfigSubsection.__init__(self)
 
 	def pickle_this(self, prefix, topickle, result):
-		for (key, val) in topickle.items():
+		for (key, val) in sorted(topickle.items(), key=lambda x: int(x[0]) if x[0].isdigit() else x[0].lower()):
 			name = '.'.join((prefix, key))
 			if isinstance(val, dict):
 				self.pickle_this(name, val, result)
