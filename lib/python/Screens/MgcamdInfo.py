@@ -1,4 +1,3 @@
-# epanel openpli base creador lucifer
 from Plugins.Plugin import PluginDescriptor
 from Components.config import config, getConfigListEntry, ConfigText, ConfigPassword, ConfigSelection, ConfigSubsection, ConfigYesNo, configfile
 from Components.ScrollLabel import ScrollLabel
