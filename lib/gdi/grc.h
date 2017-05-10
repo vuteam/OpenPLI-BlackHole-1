@@ -156,18 +156,6 @@ struct gOpcode
 			eSize size;
 		} *setShowHideInfo;
 #ifdef USE_LIBVUGLES2
-		struct psetShowItemInfo
-		{
-			long dir;
-			ePoint point;
-			eSize size;
-		} *setShowItemInfo;
-
-		struct psetFlush
-		{
-			bool enable;
-		} *setFlush;
-
 		struct psetViewInfo
 		{
 			eSize size;
