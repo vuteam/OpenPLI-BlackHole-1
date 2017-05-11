@@ -112,9 +112,6 @@ void eListbox::moveSelection(long dir)
 	int oldsel = m_selected;
 	int prevsel = oldsel;
 	int newsel;
-#ifdef USE_LIBVUGLES2
-	m_dir = dir;
-#endif
 
 	switch (dir)
 	{
