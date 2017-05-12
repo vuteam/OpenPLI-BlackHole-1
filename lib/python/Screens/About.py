@@ -22,7 +22,7 @@ class About(Screen):
         self.setTitle(_('About'))
         hddsplit, = skin.parameters.get('AboutHddSplit', (0,))
         bhVer = 'Black Hole'
-        f = open('/etc/imageversion', 'r')
+        f = open('/etc/image-version', 'r')
         bhVer = f.readline().strip()
         f.close()
 
@@ -41,7 +41,7 @@ class About(Screen):
         self['CpuInfo'] = StaticText(_('CPU: ') + self.getCPUInfoString())
         
         AboutText = _('Black Hole ') + bhVer + '\n'
-        AboutText += _('Support: RAED rrrr53@hotmail.com') + '\n\n'
+        AboutText += _('Support: SODO rdn1980@hotmail.com') + '\n\n'
 
         AboutText += _('Hardware: ') + about.getHardwareTypeString() + '\n'
         AboutText += _('CPU: ') + about.getCPUInfoString() + '\n'
@@ -141,7 +141,7 @@ class About(Screen):
 
     def getDriverInstalledDate(self):
         try:
-            driver = os.popen('opkg list-installed | grep dreambox-dvb-modules').read().strip()
+            driver = os.popen('opkg list-installed | grep vuplus-dvb-modules').read().strip()
             driver = driver.split('-')
             return driver[5]
         except:
@@ -149,7 +149,7 @@ class About(Screen):
 
     def getDriverInstalledDate_proxy(self):
         try:
-            driver = os.popen('opkg list-installed | grep dreambox-dvb-proxy').read().strip()
+            driver = os.popen('opkg list-installed | grep vuplus-dvb-proxy').read().strip()
             driver = driver.split('-')
             driver = driver[4].split('.')
             return driver[0]
@@ -248,7 +248,7 @@ class CommitInfo(Screen):
             commitlog = commitlog.encode('utf-8')
             self.cachedProjects[self.projects[self.project][1]] = commitlog
         except:
-            commitlog += _('You are using Black Hole Image To Drembox' '\n\n' 'Built By RAED' '\n\n' 'Supported' '\n' 'rrrr53@hotmail.com' '\n\n' 'Enjoy')
+            commitlog += _('You are using Black Hole Image To Vuplus' '\n\n' 'Built By REDOUANE' '\n\n' 'Supported' '\n' 'rdn1980@hotmail.com' '\n\n' 'Enjoy')
 
         self['AboutScrollLabel'].setText(commitlog)
 
