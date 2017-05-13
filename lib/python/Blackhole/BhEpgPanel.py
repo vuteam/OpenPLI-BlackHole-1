@@ -14,6 +14,7 @@ from urllib2 import Request, urlopen, URLError, HTTPError
 from random import randint
 import time
 import datetime
+config.misc.deliteepgpop = ConfigBoolean(default=True)
 
 def nab_Get_EpgProvider(provider):
     f = open('/etc/Bhepgproviders.cfg', 'r')
