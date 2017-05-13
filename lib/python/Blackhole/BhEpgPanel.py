@@ -6,7 +6,7 @@ from Components.Label import Label
 from Components.Pixmap import Pixmap
 from Components.Sources.List import List
 from Components.ConfigList import ConfigListScreen
-from Components.config import getConfigListEntry, config, ConfigYesNo, ConfigText, ConfigSelection, ConfigClock, NoSave, configfile
+from Components.config import getConfigListEntry, config, ConfigYesNo, ConfigText, ConfigSelection, ConfigClock, NoSave, configfile, ConfigBoolean
 from Tools.Directories import fileExists
 from os import system, remove as os_remove, rename as os_rename
 from enigma import eEPGCache, eTimer, eServiceReference
