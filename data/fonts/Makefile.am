@@ -17,7 +17,6 @@ dist_install_DATA = \
 	ForgottenFuturistShadow.ttf \
 	goodtime.ttf \
 	nmsbd2.ttf \
-	tiny.ttf \
 	titles.ttf \
 	LiberationSans-Bold.ttf \
 	LiberationSans-BoldItalic.ttf \
