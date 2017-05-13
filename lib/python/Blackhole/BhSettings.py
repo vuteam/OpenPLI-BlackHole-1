@@ -733,7 +733,7 @@ class Bp_UsbFormat(Screen):
     def __init__(self, session):
         Screen.__init__(self, session)
         msg = _('This wizard will help you to format Usb mass storage devices for Linux.\n')
-        msg += _('Please be sure that your usb drive is NOT CONNECTED to your Dreambox box before you continue.\n')
+        msg += _('Please be sure that your usb drive is NOT CONNECTED to your Vuplus box before you continue.\n')
         msg += _('If your usb drive is connected and mounted you have to poweroff your box, remove the usb device and reboot.\n')
         msg += _('Press Red button to continue, when you are ready and your usb is disconnected.\n')
         self['key_red'] = Label(_('Continue ->'))
@@ -750,7 +750,7 @@ class Bp_UsbFormat(Screen):
         self.canclose = True
 
     def stepOne(self):
-        msg = _('Connect your usb storage to your Dreambox box\n')
+        msg = _('Connect your usb storage to your Vuplus box\n')
         msg += _('Press Red button to continue when ready.\n\n')
         msg += _('Warning: If your usb is already connected\n')
         msg += _('to the box you have to unplug it, press\n')
@@ -1098,7 +1098,7 @@ class DeliteKernelModShow(Screen):
 class BhSpeedUp(Screen, ConfigListScreen):
     skin = '\n\t<screen position="center,center" size="902,570" title="Black Hole Speed Up">\n\t\t<widget name="lab1" position="10,10" size="882,60" font="Regular;20" valign="top" transparent="1"/>\n\t\t<widget name="config" position="30,70" size="840,450" scrollbarMode="showOnDemand"/>\n\t\t<ePixmap pixmap="skin_default/buttons/red.png" position="200,530" size="140,40" alphatest="on"/>\n\t\t<ePixmap pixmap="skin_default/buttons/green.png" position="550,530" size="140,40" alphatest="on"/>\n\t\t<widget name="key_red" position="200,530" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1"/>\n\t\t<widget name="key_green" position="550,530" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1"/>\n\t</screen>'
 
-    def __init__(self, session, firstrun = False):
+    def __init__(self, session, firstrun = True):
         Screen.__init__(self, session)
         self.firstrun = firstrun
         self.list = []
@@ -1113,8 +1113,6 @@ class BhSpeedUp(Screen, ConfigListScreen):
          ['BhFullBackup', 'bhfullbackup'],
          ['BhPersonalBackup', 'bhpersonalbackup'],
          ['BhEpgBackup', 'bhepgbackup'],
-         ['Meoboot', 'enigma2-plugin-extensions-meoboot'],
-         ['dflash BlackHole', 'enigma2-plugin-extensions-dflash'],
          ['AutoResolution', 'enigma2-plugin-systemplugins-autoresolution'],
          ['CommonInterfaceAssignment', 'enigma2-plugin-systemplugins-commoninterfaceassignment'],
          ['AddStreamUrl', 'enigma2-plugin-extensions-addstreamurl'],
@@ -1125,7 +1123,6 @@ class BhSpeedUp(Screen, ConfigListScreen):
          ['StreamTV', 'enigma2-plugin-extensions-streamtv'],
          ['AutoShutDown', 'enigma2-plugin-systemplugins-autoshutdown'],
          ['CrossEPG', 'enigma2-plugin-systemplugins-crossepg'],
-         ['xmodem', 'enigma2-plugin-extensions-xmodem'],
          ['UI3DSetup', 'enigma2-plugin-systemplugins-ui3dsetup'],
          ['UIPositionSetup', 'enigma2-plugin-systemplugins-uipositionsetup'],
          ['WirelessAccessPoint', 'enigma2-plugin-systemplugins-wirelessaccesspoint'],
